@@ -1,7 +1,7 @@
 name: indy-test-automation
 on:
   push:
-    branches: [vdr-askar-migration]
+    branches: [payment-tests-separation]
   workflow_call:
     inputs:
       ubuntuVersion:
@@ -164,7 +164,6 @@ jobs:
             echo "DIND_BUILD_ARG=20.04" >> $GITHUB_OUTPUT
             echo "distribution=focal" >> $GITHUB_OUTPUT
           fi
-
   dind-image:
     name: Create DinD Image
     needs: workflow-setup
@@ -186,7 +185,6 @@ jobs:
           TAGS="${DOCKER_IMAGE}:latest,${DOCKER_IMAGE}:${{ env.INPUT_UBUNTUVERSION }}"
           echo "tags=${TAGS}" >> $GITHUB_OUTPUT
           echo "created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
-
       - name: Log into the GitHub Container Registry
         if: steps.cache-image.outputs.cache-hit != 'true'
         uses: docker/login-action@v2
@@ -205,7 +203,6 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx
-
       - name: Build and push image
         uses: docker/build-push-action@v3
         with:
@@ -225,7 +222,6 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
   node-image:
     name: Create Node Image
     needs: workflow-setup
@@ -249,7 +245,6 @@ jobs:
           TAGS="${DOCKER_IMAGE}:latest"
           echo "tags=${TAGS}" >>  $GITHUB_OUTPUT
           echo "created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >>  $GITHUB_OUTPUT
-
       - name: Set up Docker Buildx
         if: steps.cache-image.outputs.cache-hit != 'true'
         uses: docker/setup-buildx-action@v2
@@ -304,7 +299,6 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
   client-image:
     name: Create Client Image
     needs: [ workflow-setup, dind-image ]
@@ -328,7 +322,6 @@ jobs:
           TAGS="${DOCKER_IMAGE}:latest,${DOCKER_IMAGE}:${{ env.INPUT_UBUNTUVERSION }}"
           echo "tags=${TAGS}" >> $GITHUB_OUTPUT
           echo "created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -339,7 +332,6 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx
-
       - name: Build and cache image
         uses: docker/build-push-action@v3
         with:
@@ -372,7 +364,6 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
   get-test-modules:
     name: Get Test Modules
     runs-on: ubuntu-latest
@@ -429,7 +420,6 @@ jobs:
       - name: Create docker network
         run: |
           docker network create --subnet="${{ env.NETWORK_SUBNET }}" "${{ env.NETWORK_NAME }}"
-
       - name: Download client artifact
         uses: actions/download-artifact@v3
         with:
@@ -446,23 +436,19 @@ jobs:
         run: |
           docker load --input /tmp/client_image_${{ env.INPUT_UBUNTUVERSION }}.tar
           docker load --input /tmp/node_image_${{ env.INPUT_UBUNTUVERSION }}.tar
-
       - name: ${{ matrix.module }}
         id: test_Matrix
         run: |
           cd ./system/docker
-
           TEST_PARAMS="-l -v --junit-xml=${{ matrix.module }}-report.xml"
           if [[ ${INCLUDE_PAYMENT_TESTS} == "true" ]]; then
             TEST_PARAMS+="${TEST_PARAMS} --payments"
           fi
-
           UBUNTU_VERSION="${{ env.INPUT_UBUNTUVERSION }}" \
           IMAGE_REPOSITORY="ghcr.io/${{ env.GITHUB_REPOSITORY_NAME }}/" \
           CLIENT_IMAGE="client:${{ env.INPUT_UBUNTUVERSION }}" \
           NODE_IMAGE="node-${{ env.INPUT_UBUNTUVERSION }}" \
           ./run.sh ${{ env.TEST_DIRECTORY }}/${{ matrix.module }}.py "${TEST_PARAMS}" ${{ env.NETWORK_NAME }}
-
       - name: Publish Test Report
         if: success() || failure()
         uses: scacap/action-surefire-report@v1
