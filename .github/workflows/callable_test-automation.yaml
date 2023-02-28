@@ -471,7 +471,11 @@ jobs:
           IMAGE_REPOSITORY="ghcr.io/${{ env.GITHUB_REPOSITORY_NAME }}/" \
           CLIENT_IMAGE="client:${{ env.INPUT_UBUNTUVERSION }}" \
           NODE_IMAGE="node-${{ env.INPUT_UBUNTUVERSION }}" \
+          if [[ ${INCLUDE_PAYMENT_TESTS} == "true" ]]; then
+            ./run.sh ${{ env.TEST_DIRECTORY_PAYMENT }}/${{ matrix.module }}.py "${TEST_PARAMS}" ${{ env.NETWORK_NAME }} \
+          fi
           ./run.sh ${{ env.TEST_DIRECTORY }}/${{ matrix.module }}.py "${TEST_PARAMS}" ${{ env.NETWORK_NAME }}
+
       - name: Publish Test Report
         if: success() || failure()
         uses: scacap/action-surefire-report@v1
