@@ -135,7 +135,7 @@ env:
 
   NETWORK_NAME: "indy-test-automation-network"
   NETWORK_SUBNET: "10.0.0.0/24"
-  TEST_DIRECTORY: "system_payments_only/indy-node-tests"
+  TEST_DIRECTORY: "system/indy-node-tests system_payments_only/indy-node-tests"
   INCLUDE_PAYMENT_TESTS: false
 
 jobs:
