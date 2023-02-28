@@ -43,7 +43,7 @@ on:
         description: "The directory, relative to the indy-test-automantion project folder, containing the tests to be executed."
         required: false
         type: string
-        default: "system_payments_only/indy-node-tests"
+        default: "system/indy-node-tests"
       includePaymentTests:
         description: "Include payment tests.  Defaults to false."
         required: false
@@ -100,7 +100,7 @@ on:
         description: "The directory, relative to the indy-test-automantion project folder, containing the tests to be executed."
         required: false
         type: string
-        default: "system_payments_only/indy-node-tests"
+        default: "system/indy-node-tests"
       includePaymentTests:
         description: "Include payment tests.  Defaults to false."
         required: false
@@ -135,8 +135,9 @@ env:
 
   NETWORK_NAME: "indy-test-automation-network"
   NETWORK_SUBNET: "10.0.0.0/24"
-  TEST_DIRECTORY: "system/indy-node-tests system_payments_only/indy-node-tests"
+  TEST_DIRECTORY: "system/indy-node-tests"
   INCLUDE_PAYMENT_TESTS: false
+  TEST_DIRECTORY_PAYMENT: "system_payment/indy-node-tests"
 
 jobs:
   workflow-setup:
@@ -381,6 +382,28 @@ jobs:
         uses: the-coding-turtle/ga-file-list@v0.4.1
         with:
           directory: ${{ env.TEST_DIRECTORY }}
+          file_extension: "py"
+
+          # ==============================================
+          # Include all tests by default.
+          # ==============================================
+          only_files_starts_with: "test,Test"
+
+          # ==============================================
+          # Ignore specific test harnesses here
+          # ----------------------------------------------
+          # Ignore tests by renaming the file for the
+          # test to have a prefix of "skip-". Line below
+          # is not really needed, but left in to make
+          # it clear the files are being ignored.
+          # ==============================================
+          ignore_files_starts_with: ""
+
+      - name: Get Payment Module List
+        id: get-module-list
+        uses: the-coding-turtle/ga-file-list@v0.4.1
+        with:
+          directory: ${{ env.TEST_DIRECTORY_PAYMENT }}
           file_extension: "py"
 
           # ==============================================
