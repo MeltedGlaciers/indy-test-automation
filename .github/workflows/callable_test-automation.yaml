@@ -137,7 +137,7 @@ env:
   NETWORK_SUBNET: "10.0.0.0/24"
   TEST_DIRECTORY: "system/indy-node-tests"
   INCLUDE_PAYMENT_TESTS: false
-  TEST_DIRECTORY_PAYMENT: "system_payment/indy-node-tests"
+  TEST_DIRECTORY_PAYMENT: "system_payments_only/indy-node-tests"
 
 jobs:
   workflow-setup:
@@ -400,7 +400,7 @@ jobs:
           ignore_files_starts_with: ""
 
       - name: Get Payment Module List
-        id: get-module-list
+        id: get-payment-module-list
         uses: the-coding-turtle/ga-file-list@v0.4.1
         with:
           directory: ${{ env.TEST_DIRECTORY_PAYMENT }}
