@@ -43,7 +43,7 @@ on:
         description: "The directory, relative to the indy-test-automantion project folder, containing the tests to be executed."
         required: false
         type: string
-        default: "system/indy-node-tests"
+        default: "system_payments_only/indy-node-tests"
       includePaymentTests:
         description: "Include payment tests.  Defaults to false."
         required: false
@@ -100,7 +100,7 @@ on:
         description: "The directory, relative to the indy-test-automantion project folder, containing the tests to be executed."
         required: false
         type: string
-        default: "system/indy-node-tests"
+        default: "system_payments_only/indy-node-tests"
       includePaymentTests:
         description: "Include payment tests.  Defaults to false."
         required: false
@@ -135,7 +135,7 @@ env:
 
   NETWORK_NAME: "indy-test-automation-network"
   NETWORK_SUBNET: "10.0.0.0/24"
-  TEST_DIRECTORY: "system/indy-node-tests"
+  TEST_DIRECTORY: "system_payments_only/indy-node-tests"
   INCLUDE_PAYMENT_TESTS: false
 
 jobs:
