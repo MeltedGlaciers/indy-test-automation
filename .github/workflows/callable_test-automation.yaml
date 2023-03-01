@@ -426,7 +426,7 @@ jobs:
   ### The tests rely on docker in docker with the fixed network name and fixed IP addresses.
   MatrixTest:
     name: MatrixTest
-    needs: [ workflow-setup, node-image, client-image, get-test-modules]
+    needs: [ workflow-setup, node-image, client-image, get-test-modules, get-payment-module-list]
     runs-on: ubuntu-20.04
     env:
       GITHUB_REPOSITORY_NAME: ${{ needs.workflow-setup.outputs.GITHUB_REPOSITORY_NAME }}
