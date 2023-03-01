@@ -370,6 +370,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       modules: ${{ steps.get-module-list.outputs.file_names }}
+      payments_modules: ${{ steps.get-payment-module-list.outputs.file_names }}
     steps:
       - name: Git checkout MeltedGlaciers/indy-test-automation
         uses: actions/checkout@v3
@@ -489,4 +490,38 @@ jobs:
         with:
           name: detailed-test-result-test_consensus
           path: test-result-indy-test-automation-${{ matrix.module }}.txt
+          retention-days: 5
+
+        # PAYMENTS
+      - name: ${{ matrix.payments_module }}
+        id: test_Matrix_p
+        if: ${{ env.INCLUDE_PAYMENT_TESTS }} == 'true'
+        run: |
+          cd ./system/docker
+          TEST_PARAMS="-l -v --junit-xml=${{ matrix.module }}-report.xml"
+          if [[ ${INCLUDE_PAYMENT_TESTS} == "true" ]]; then
+            TEST_PARAMS+="${TEST_PARAMS} --payments"
+          fi
+          UBUNTU_VERSION="${{ env.INPUT_UBUNTUVERSION }}" \
+          IMAGE_REPOSITORY="ghcr.io/${{ env.GITHUB_REPOSITORY_NAME }}/" \
+          CLIENT_IMAGE="client:${{ env.INPUT_UBUNTUVERSION }}" \
+          NODE_IMAGE="node-${{ env.INPUT_UBUNTUVERSION }}" \
+          ./run.sh ${{ env.TEST_DIRECTORY }}/${{ matrix.module }}.py "${TEST_PARAMS}" ${{ env.NETWORK_NAME }}
+
+      - name: Publish Test Report
+        if: ${{ env.INCLUDE_PAYMENT_TESTS }} == 'true') && (success() || failure())
+        uses: scacap/action-surefire-report@v1
+        continue-on-error: true
+        with:
+          check_name: ${{ env.TEST_DIRECTORY_PAYMENT }}/${{ matrix.payments_modules }} Test Report
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          report_paths: "*-report.xml"
+
+      - name: Upload Detailed Test Failure Results
+        # The test runner only emits the detailed test results if the tests fail.
+        if: (steps.test_Matrix_p == 'failure') && failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: detailed-test-result-test_consensus
+          path: test-result-indy-test-automation-${{ matrix.payments_modules }}-p.txt
           retention-days: 5
