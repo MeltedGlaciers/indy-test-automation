@@ -433,6 +433,7 @@ jobs:
     strategy:
       matrix:
         module: ${{ fromJson(needs.get-test-modules.outputs.modules) }}
+        payments_modules: ${{ fromJson(needs.get-payment-module-list.outputs.modules) }}
       fail-fast: false
     steps:
       - name: Git checkout MeltedGlaciers/indy-test-automation
