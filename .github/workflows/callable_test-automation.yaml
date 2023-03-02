@@ -262,13 +262,13 @@ jobs:
       #     name: sovrin.deb
       #     path: ./system/docker/node/
       - name: LS DEBUG
-        run: ls ./system/docker/node/
+        run: ls ./system_payments_only/docker/node/
       - name: Build and cache image
         if: steps.cache-image.outputs.cache-hit != 'true'
         uses: docker/build-push-action@v3
         with:
-          context: ./system/docker/node
-          file: ./system/docker/node/Dockerfile.${{ env.INPUT_UBUNTUVERSION }}
+          context: ./system_payments_only/docker/node
+          file: ./system_payments_only/docker/node/Dockerfile.${{ env.INPUT_UBUNTUVERSION }}
           push: false
           tags: ${{ steps.prep.outputs.tags }}
           labels: |
@@ -335,8 +335,8 @@ jobs:
       - name: Build and cache image
         uses: docker/build-push-action@v3
         with:
-          context: ./system/docker/client/
-          file: ./system/docker/client/Dockerfile.${{ env.INPUT_UBUNTUVERSION }}
+          context: ./system_payments_only/docker/client/
+          file: ./system_payments_only/docker/client/Dockerfile.${{ env.INPUT_UBUNTUVERSION }}
           push: false
           tags: ${{ steps.prep.outputs.tags }}
           labels: |
@@ -439,7 +439,7 @@ jobs:
       - name: ${{ matrix.module }}
         id: test_Matrix
         run: |
-          cd ./system/docker
+          cd ./system_payments_only/docker
           TEST_PARAMS="-l -v --junit-xml=${{ matrix.module }}-report.xml"
           if [[ ${INCLUDE_PAYMENT_TESTS} == "true" ]]; then
             TEST_PARAMS+="${TEST_PARAMS} --payments"
