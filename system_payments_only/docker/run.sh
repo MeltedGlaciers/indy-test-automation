@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export MSYS_NO_PATHCONV=1
-DEF_TEST_TARGET="system/indy-node-tests"
+DEF_TEST_TARGET="system_payments_only/indy-node-tests"
 DEF_PYTEST_ARGS="-l -v"
 DEF_TEST_NETWORK_NAME="indy-test-automation-network"
 
@@ -82,7 +82,7 @@ command_setup="
     # The latest version of pip requires the version in pypi exactly match the version in package's setup.py file.
     # But they don't match for python3-indy... so we need to have the old version of pip pinned.
     pipenv run pip install pip==10.0.1
-    pipenv run pip install -r system/requirements-${ubuntu_version}.txt
+    pipenv run pip install -r system_payments_only/requirements-${ubuntu_version}.txt
 "
 
 

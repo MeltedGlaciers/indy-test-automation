@@ -29,7 +29,7 @@ test_network_subnet="${2:-$DEF_TEST_NETWORK_SUBNET}"
 
 user_id=$(id -u)
 repo_path=$(git rev-parse --show-toplevel)
-docker_routine_path="$repo_path/system/docker"
+docker_routine_path="$repo_path/system_payments_only/docker"
 
 # Set the following variables based on the OS:
 # - docker_socket_path
@@ -94,7 +94,7 @@ docker run -t --rm \
     -e DIND_CONTAINER_REGISTRY \
     -e DIND_IMAGE_NAME \
     -e UBUNTU_VERSION \
-    "$docker_compose_image_name" docker-compose -f system/docker/docker-compose.yml build client
+    "$docker_compose_image_name" docker-compose -f system_payments_only/docker/docker-compose.yml build client
 
 # 3. build node image
 docker run -t --rm \
@@ -115,7 +115,7 @@ docker run -t --rm \
     -e URSA_VERSION \
     -e PYTHON3_PYZMQ_VERSION \
     -e UBUNTU_VERSION \
-    "$docker_compose_image_name" docker-compose -f system/docker/docker-compose.yml build node
+    "$docker_compose_image_name" docker-compose -f system_payments_only/docker/docker-compose.yml build node
 
 
 docker images "$image_repository"

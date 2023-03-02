@@ -1,6 +1,6 @@
 import boto3
 from pprint import pprint
-from system.utils import PERSISTENT_INSTANCES, ORIGINAL_MAPPING, UPGRADE_MAPPING  # instance ids are the same for now
+from system_payments_only.utils import PERSISTENT_INSTANCES, ORIGINAL_MAPPING, UPGRADE_MAPPING  # instance ids are the same for now
 import time
 import botocore
 

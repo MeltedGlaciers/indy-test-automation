@@ -5,8 +5,8 @@ import json
 import re
 import pandas as pd
 import matplotlib.pyplot as plt
-from system.analysis.perf_res_plotter import plot_metrics
-from system.utils import run_external_cmd
+from system_payments_only.analysis.perf_res_plotter import plot_metrics
+from system_payments_only.utils import run_external_cmd
 
 
 NODES_NUM = 25
