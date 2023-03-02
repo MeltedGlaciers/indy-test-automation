@@ -381,7 +381,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       modules: ${{ steps.get-module-list.outputs.file_names }}
-      payment_modules: ${{ steps.get-payment-module-list.outputs.file_names }}
+      payment-modules: ${{ steps.get-payment-module-list.outputs.file_names }}
     steps:
       - name: Git checkout MeltedGlaciers/indy-test-automation
         uses: actions/checkout@v3
