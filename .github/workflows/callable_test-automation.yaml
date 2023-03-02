@@ -44,11 +44,11 @@ on:
         required: false
         type: string
         default: "system/indy-node-tests"
-      paymentTestDirectory:
-        description: "The directory, relative to the indy-test-automantion project folder, containing the payment tests to be executed."
-        required: false
-        type: string
-        default: "system_payments_only/indy-node-tests"
+#      paymentTestDirectory:
+#        description: "The directory, relative to the indy-test-automantion project folder, containing the payment tests to be executed."
+#        required: false
+#        type: string
+#        default: "system_payments_only/indy-node-tests"
       includePaymentTests:
         description: "Include payment tests.  Defaults to false."
         required: false
@@ -106,11 +106,11 @@ on:
         required: false
         type: string
         default: "system/indy-node-tests"
-      paymentTestDirectory:
-        description: "The directory, relative to the indy-test-automantion project folder, containing the payment tests to be executed."
-        required: false
-        type: string
-        default: "system_payments_only/indy-node-tests"
+#      paymentTestDirectory:
+#        description: "The directory, relative to the indy-test-automantion project folder, containing the payment tests to be executed."
+#        required: false
+#        type: string
+#        default: "system_payments_only/indy-node-tests"
       includePaymentTests:
         description: "Include payment tests.  Defaults to false."
         required: false
