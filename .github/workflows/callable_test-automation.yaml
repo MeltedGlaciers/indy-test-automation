@@ -433,7 +433,6 @@ jobs:
     strategy:
       matrix:
         module: ${{ fromJson(needs.get-test-modules.outputs.modules) }}
-        payments_modules: ${{ fromJson(needs.get-test-modules.outputs.payments_modules) }}
       fail-fast: false
     steps:
       - name: Git checkout MeltedGlaciers/indy-test-automation
@@ -493,10 +492,44 @@ jobs:
           path: test-result-indy-test-automation-${{ matrix.module }}.txt
           retention-days: 5
 
-        # PAYMENTS
-      - name: ${{ matrix.payments_module }}
-        id: test_Matrix_p
-        if: ${{ env.INCLUDE_PAYMENT_TESTS }} == 'true'
+  MatrixTestP:
+    name: MatrixTestP
+    needs: [ workflow-setup, node-image, client-image, get-test-modules ]
+    runs-on: ubuntu-20.04
+    env:
+      GITHUB_REPOSITORY_NAME: ${{ needs.workflow-setup.outputs.GITHUB_REPOSITORY_NAME }}
+    strategy:
+      matrix:
+        module: ${{ fromJson(needs.get-test-modules.outputs.payments_modules) }}
+      fail-fast: false
+    steps:
+      - name: Git checkout MeltedGlaciers/indy-test-automation
+        uses: actions/checkout@v3
+        with:
+          repository: MeltedGlaciers/indy-test-automation
+          ref: ${{ env.TEST_AUTOMATION_BRANCH }}
+
+      - name: Create docker network
+        run: |
+          docker network create --subnet="${{ env.NETWORK_SUBNET }}" "${{ env.NETWORK_NAME }}"
+      - name: Download client artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: client_image
+          path: /tmp
+
+      - name: Download node artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: node_image
+          path: /tmp
+
+      - name: Load client and node image
+        run: |
+          docker load --input /tmp/client_image_${{ env.INPUT_UBUNTUVERSION }}.tar
+          docker load --input /tmp/node_image_${{ env.INPUT_UBUNTUVERSION }}.tar
+      - name: ${{ matrix.module }}
+        id: test_Matrix
         run: |
           cd ./system/docker
           TEST_PARAMS="-l -v --junit-xml=${{ matrix.module }}-report.xml"
@@ -507,22 +540,22 @@ jobs:
           IMAGE_REPOSITORY="ghcr.io/${{ env.GITHUB_REPOSITORY_NAME }}/" \
           CLIENT_IMAGE="client:${{ env.INPUT_UBUNTUVERSION }}" \
           NODE_IMAGE="node-${{ env.INPUT_UBUNTUVERSION }}" \
-          ./run.sh ${{ env.TEST_DIRECTORY }}/${{ matrix.module }}.py "${TEST_PARAMS}" ${{ env.NETWORK_NAME }}
+          ./run.sh ${{ env.TEST_DIRECTORY_PAYMENT }}/${{ matrix.module }}.py "${TEST_PARAMS}" ${{ env.NETWORK_NAME }}
 
       - name: Publish Test Report
-        if: ${{ env.INCLUDE_PAYMENT_TESTS }} == 'true') && (success() || failure())
+        if: success() || failure()
         uses: scacap/action-surefire-report@v1
         continue-on-error: true
         with:
-          check_name: ${{ env.TEST_DIRECTORY_PAYMENT }}/${{ matrix.payments_modules }} Test Report
+          check_name: ${{ env.TEST_DIRECTORY_PAYMENT }}/${{ matrix.module }} Test Report
           github_token: ${{ secrets.GITHUB_TOKEN }}
           report_paths: "*-report.xml"
 
       - name: Upload Detailed Test Failure Results
         # The test runner only emits the detailed test results if the tests fail.
-        if: (steps.test_Matrix_p == 'failure') && failure()
+        if: (steps.test_Matrix == 'failure') && failure()
         uses: actions/upload-artifact@v3
         with:
           name: detailed-test-result-test_consensus
-          path: test-result-indy-test-automation-${{ matrix.payments_modules }}-p.txt
+          path: test-result-indy-test-automation-${{ matrix.module }}.txt
           retention-days: 5
