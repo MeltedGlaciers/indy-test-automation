@@ -44,6 +44,11 @@ on:
         required: false
         type: string
         default: "system/indy-node-tests"
+      paymentTestDirectory:
+        description: "The directory, relative to the indy-test-automantion project folder, containing the payment tests to be executed."
+        required: false
+        type: string
+        default: "system_payments_only/indy-node-tests"
       includePaymentTests:
         description: "Include payment tests.  Defaults to false."
         required: false
@@ -101,6 +106,11 @@ on:
         required: false
         type: string
         default: "system/indy-node-tests"
+      paymentTestDirectory:
+        description: "The directory, relative to the indy-test-automantion project folder, containing the payment tests to be executed."
+        required: false
+        type: string
+        default: "system_payments_only/indy-node-tests"
       includePaymentTests:
         description: "Include payment tests.  Defaults to false."
         required: false
@@ -407,20 +417,7 @@ jobs:
         with:
           directory: ${{ env.TEST_DIRECTORY_PAYMENT }}
           file_extension: "py"
-
-          # ==============================================
-          # Include all tests by default.
-          # ==============================================
           only_files_starts_with: "test,Test"
-
-          # ==============================================
-          # Ignore specific test harnesses here
-          # ----------------------------------------------
-          # Ignore tests by renaming the file for the
-          # test to have a prefix of "skip-". Line below
-          # is not really needed, but left in to make
-          # it clear the files are being ignored.
-          # ==============================================
           ignore_files_starts_with: ""
 
   ### 1 Job in workflow per test
@@ -496,6 +493,7 @@ jobs:
     name: MatrixTestPayments
     needs: [ workflow-setup, node-image, client-image, get-test-modules ]
     runs-on: ubuntu-20.04
+    if: ${{ env.INCLUDE_PAYMENT_TESTS == 'true' }}
     env:
       GITHUB_REPOSITORY_NAME: ${{ needs.workflow-setup.outputs.GITHUB_REPOSITORY_NAME }}
     strategy:
