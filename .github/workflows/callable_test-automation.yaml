@@ -422,8 +422,8 @@ jobs:
 
   ### 1 Job in workflow per test
   ### The tests rely on docker in docker with the fixed network name and fixed IP addresses.
-  MatrixTest:
-    name: MatrixTest
+  MatrixTestVDR:
+    name: MatrixTestVDR
     needs: [ workflow-setup, node-image, client-image, get-test-modules ]
     runs-on: ubuntu-20.04
     env:
@@ -476,7 +476,7 @@ jobs:
         uses: scacap/action-surefire-report@v1
         continue-on-error: true
         with:
-          check_name: ${{ env.TEST_DIRECTORY }}/${{ matrix.module }} Test Report
+          check_name: VDR-${{ matrix.module }} Test Report
           github_token: ${{ secrets.GITHUB_TOKEN }}
           report_paths: "*-report.xml"
 
@@ -486,18 +486,18 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: detailed-test-result-test_consensus
-          path: test-result-indy-test-automation-${{ matrix.module }}.txt
+          path: test-result-indy-test-automation-${{ matrix.module }}-vdr.txt
           retention-days: 5
 
-  MatrixTestP:
-    name: MatrixTestP
+  MatrixTestPayments:
+    name: MatrixTestPayments
     needs: [ workflow-setup, node-image, client-image, get-test-modules ]
     runs-on: ubuntu-20.04
     env:
       GITHUB_REPOSITORY_NAME: ${{ needs.workflow-setup.outputs.GITHUB_REPOSITORY_NAME }}
     strategy:
       matrix:
-        module: ${{ fromJson(needs.get-test-modules.outputs.payments_modules) }}
+        module: ${{ fromJson(needs.get-test-modules.outputs.payment-modules) }}
       fail-fast: false
     steps:
       - name: Git checkout MeltedGlaciers/indy-test-automation
@@ -528,7 +528,7 @@ jobs:
       - name: ${{ matrix.module }}
         id: test_Matrix
         run: |
-          cd ./system/docker
+          cd ./system_payments_only/docker
           TEST_PARAMS="-l -v --junit-xml=${{ matrix.module }}-report.xml"
           if [[ ${INCLUDE_PAYMENT_TESTS} == "true" ]]; then
             TEST_PARAMS+="${TEST_PARAMS} --payments"
@@ -543,7 +543,7 @@ jobs:
         uses: scacap/action-surefire-report@v1
         continue-on-error: true
         with:
-          check_name: ${{ env.TEST_DIRECTORY_PAYMENT }}/${{ matrix.module }} Test Report
+          check_name: Payment-${{ matrix.module }} Test Report
           github_token: ${{ secrets.GITHUB_TOKEN }}
           report_paths: "*-report.xml"
 
@@ -553,5 +553,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: detailed-test-result-test_consensus
-          path: test-result-indy-test-automation-${{ matrix.module }}.txt
+          path: test-result-indy-test-automation-${{ matrix.module }}-payment.txt
           retention-days: 5
