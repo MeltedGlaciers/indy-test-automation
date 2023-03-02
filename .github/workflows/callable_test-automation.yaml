@@ -493,7 +493,6 @@ jobs:
     name: MatrixTestPayments
     needs: [ workflow-setup, node-image, client-image, get-test-modules ]
     runs-on: ubuntu-20.04
-    if: ${{ env.INCLUDE_PAYMENT_TESTS }} == 'true'
     env:
       GITHUB_REPOSITORY_NAME: ${{ needs.workflow-setup.outputs.GITHUB_REPOSITORY_NAME }}
     strategy:
