@@ -567,8 +567,8 @@ jobs:
         module: ${{ fromJson(needs.get-test-modules.outputs.modules) }}
         test-path: ${{ needs.workflow-setup.outputs.testDirectory }}
         include:
-          module: "test_freshness.py" #${{ fromJson(needs.get-test-modules.outputs.payment-modules) }}
-          test-path: "system_payments_only/indy-node-tests"
+          - module: ${{ fromJson(needs.get-test-modules.outputs.payment-modules) }}
+            test-path: "system_payments_only/indy-node-tests"
       fail-fast: false
     steps:
       - name: Git checkout MeltedGlaciers/indy-test-automation
