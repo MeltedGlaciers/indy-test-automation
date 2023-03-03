@@ -557,7 +557,7 @@ jobs:
 #          retention-days: 5
   Tests:
     - name: VDR
-      uses: actions/matrix_test_action@v1
+      uses: hyperledger/indy-test-automation/matrix_test_action.yaml@v1
       with:
         modules-json: ${{ needs.get-test-modules.outputs.modules }}
         test-path: ${{ env.TEST_DIRECTORY_PAYMENT }}
