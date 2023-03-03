@@ -565,10 +565,10 @@ jobs:
     strategy:
       matrix:
         module: ${{ fromJson(needs.get-test-modules.outputs.modules) }}
-        test-path: ${{ TEST_DIRECTORY }}
+        test-path: ${{ env.TEST_DIRECTORY }}
         include:
           module: ${{ fromJson(needs.get-test-modules.outputs.payment-modules) }}
-          test-path: ${{ TEST_DIRECTORY_PAYMENT }}
+          test-path: ${{ env.TEST_DIRECTORY_PAYMENT }}
       fail-fast: false
     steps:
       - name: Git checkout MeltedGlaciers/indy-test-automation
